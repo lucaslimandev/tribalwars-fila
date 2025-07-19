@@ -33,6 +33,9 @@ function atualizarTabela() {
     const tempo = new Date(dados.timestamp)
     const minutosPassados = (Date.now() - tempo.getTime()) / 60000
 
+    const status = minutosPassados > 10 ? "Deslogado" : "Logado"
+    const statusColor = minutosPassados > 10 ? "#dc3545" : "#28a745"
+
     const playerPoints = dados.points
 
     const recursos = {
@@ -62,7 +65,6 @@ function atualizarTabela() {
       const primeiro = dados.fila_construcao[0]
       const resto = dados.fila_construcao.slice(1)
 
-      // Monta o conteúdo do tooltip com o restante da fila, usando HTML mesmo
       let tooltipConteudo = ""
       if (resto.length > 0) {
         tooltipConteudo = resto
@@ -76,19 +78,20 @@ function atualizarTabela() {
       }
 
       filaHtml = `
-    <div class="tooltip-container">
-      <div class="tooltip-primeiro">
-        ${primeiro.nome} (Nível ${primeiro.nivel})<br>
-        <small>Conclui: ${primeiro.conclusao}</small>
-      </div>
-      <div class="tooltip-texto">${tooltipConteudo}</div>
-    </div>
-  `
+        <div class="tooltip-container">
+          <div class="tooltip-primeiro">
+            ${primeiro.nome} (Nível ${primeiro.nivel})<br>
+            <small>Conclui: ${primeiro.conclusao}</small>
+          </div>
+          <div class="tooltip-texto">${tooltipConteudo}</div>
+        </div>
+      `
     }
 
     const linha = document.createElement("tr")
 
     linha.innerHTML = `
+      <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
       <td>${jogador}</td>
       <td>${playerPoints}</td>
       <td>${tempo.toLocaleString()}</td>
