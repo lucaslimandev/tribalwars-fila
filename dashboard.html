@@ -6,6 +6,136 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      /* RESET e base */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f7f9fc;
+        color: #333;
+        min-height: 100vh;
+        padding: 30px 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1 {
+        margin-bottom: 24px;
+        font-weight: 700;
+        font-size: 2rem;
+        color: #222;
+        text-align: center;
+      }
+
+      table#players-table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 1100px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      thead tr {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+      }
+
+      tbody tr:hover {
+        background-color: #f0f4ff;
+      }
+
+      /* Fila de construção com tooltip elegante */
+      .fila-curta {
+        position: relative;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 250px;
+        margin: 0 auto;
+      }
+
+      .fila-curta:hover::after {
+        content: attr(data-completa);
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 110%;
+        margin-top: 8px;
+        background-color: rgba(50, 50, 50, 0.9);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        white-space: pre-line;
+        font-size: 0.85rem;
+        min-width: 250px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+      }
+
+      /* Responsividade */
+      @media (max-width: 850px) {
+        table#players-table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+        thead tr {
+          display: none;
+        }
+        tbody tr {
+          margin-bottom: 18px;
+          background: white;
+          padding: 16px 12px;
+          border-radius: 8px;
+          box-shadow: 0 5px 12px rgba(0, 0, 0, 0.07);
+        }
+        tbody td {
+          border: none;
+          padding-left: 50%;
+          text-align: right;
+          position: relative;
+          font-size: 0.9rem;
+          line-height: 1.3;
+        }
+        tbody td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-weight: 700;
+          color: #555;
+          white-space: nowrap;
+          text-transform: capitalize;
+        }
+        .fila-curta:hover::after {
+          left: auto;
+          right: 15px;
+          transform: none;
+          min-width: 200px;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>Monitor de Recursos - Tribal Wars</h1>
@@ -23,6 +153,7 @@
       </thead>
       <tbody></tbody>
     </table>
+
     <script>
       if (sessionStorage.getItem("autenticado") !== "ok") {
         window.location.href = "index.html"
