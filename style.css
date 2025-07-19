@@ -80,3 +80,27 @@ tr:nth-child(even) {
 .tooltip-primeiro {
   white-space: normal;
 }
+
+#senha-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.senha-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px black;
+  text-align: center;
+}
+
+.senha-box input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin: 1rem 0;
+}

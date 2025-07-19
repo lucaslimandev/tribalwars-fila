@@ -2,28 +2,60 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Recursos dos Jogadores</title>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #login-box {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #999;
+        text-align: center;
+      }
+
+      input,
+      button {
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%;
+      }
+
+      .erro {
+        color: red;
+      }
+    </style>
   </head>
   <body>
-    <h1>Monitor de Recursos - Tribal Wars</h1>
-    <table id="players-table">
-      <thead>
-        <tr>
-          <th>Jogador</th>
-          <th>Última Atualização</th>
-          <th>Madeira</th>
-          <th>Argila</th>
-          <th>Ferro</th>
-          <th>Armazenamento</th>
-          <th>Fila de Construção</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div id="login-box">
+      <h2>Autenticação</h2>
+      <input type="password" id="senha" placeholder="Digite a senha" />
+      <button onclick="entrar()">Entrar</button>
+      <p class="erro" id="mensagem-erro"></p>
+    </div>
 
-    <script src="app.js"></script>
+    <script>
+      const SENHA = "1234" // senha configurável
+
+      function entrar() {
+        const senhaDigitada = document.getElementById("senha").value
+        const erro = document.getElementById("mensagem-erro")
+
+        if (senhaDigitada === SENHA) {
+          sessionStorage.setItem("autenticado", "ok")
+          window.location.href = "dashboard.html"
+        } else {
+          erro.textContent = "Senha incorreta."
+        }
+      }
+    </script>
   </body>
 </html>
