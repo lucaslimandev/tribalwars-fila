@@ -1,0 +1,82 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.fila-lista {
+  text-align: left;
+  max-width: 250px;
+  white-space: normal;
+  font-size: 0.9em;
+}
+
+.fila-lista li {
+  margin-bottom: 4px;
+}
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  max-width: 250px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tooltip-texto {
+  visibility: hidden;
+  width: 280px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 5px;
+  padding: 8px 10px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 120%; /* acima do texto */
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  font-size: 0.85em;
+  pointer-events: none;
+
+  /* animação suave */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-texto {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-primeiro {
+  white-space: normal;
+}
