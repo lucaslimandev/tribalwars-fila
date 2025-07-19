@@ -14,6 +14,12 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
 }
 
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    window.location.href = "index.html" // redireciona se não estiver logado
+  }
+})
+
 const db = firebase.database()
 const tabela = document.querySelector("#players-table tbody")
 
@@ -26,6 +32,8 @@ function atualizarTabela() {
     const dados = dadosCache[jogador]
     const tempo = new Date(dados.timestamp)
     const minutosPassados = (Date.now() - tempo.getTime()) / 60000
+
+    const playerPoints = dados.points
 
     const recursos = {
       madeira: Math.floor(
@@ -82,6 +90,7 @@ function atualizarTabela() {
 
     linha.innerHTML = `
       <td>${jogador}</td>
+      <td>${playerPoints}</td>
       <td>${tempo.toLocaleString()}</td>
       <td>${recursos.madeira}</td>
       <td>${recursos.argila}</td>
