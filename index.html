@@ -2,123 +2,95 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login - Área Protegida</title>
+    <title>Login</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <style>
-      /* Reset básico */
-      * {
-        box-sizing: border-box;
-      }
-      body,
-      html {
-        height: 100%;
+      body {
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+        height: 100vh;
         margin: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea, #764ba2);
         display: flex;
         justify-content: center;
         align-items: center;
-        color: #333;
       }
-
       #login-box {
         background: white;
-        padding: 40px 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        width: 320px;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        width: 300px;
+      }
+      h2 {
         text-align: center;
+        margin-bottom: 1rem;
       }
-
-      #login-box h2 {
-        margin-bottom: 24px;
-        color: #4a4a4a;
-        font-weight: 700;
-        font-size: 1.8rem;
-      }
-
-      #login-box input[type="password"] {
+      input,
+      button {
         width: 100%;
-        padding: 14px 16px;
-        margin-bottom: 20px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
         font-size: 1rem;
-        transition: border-color 0.3s ease;
       }
-      #login-box input[type="password"]:focus {
-        border-color: #667eea;
-        outline: none;
-        box-shadow: 0 0 6px rgba(102, 126, 234, 0.6);
-      }
-
-      #login-box button {
-        width: 100%;
-        background-color: #667eea;
+      button {
+        background-color: #007bff;
         color: white;
-        font-weight: 600;
-        padding: 14px 0;
         border: none;
-        border-radius: 8px;
-        font-size: 1.1rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
       }
-      #login-box button:hover {
-        background-color: #5563c1;
+      button:hover {
+        background-color: #0056b3;
       }
-
-      #mensagem-erro {
-        margin-top: 12px;
-        color: #e74c3c;
-        min-height: 20px;
-        font-weight: 600;
-      }
-
-      @media (max-width: 400px) {
-        #login-box {
-          width: 90%;
-          padding: 30px 20px;
-        }
+      #error-msg {
+        color: red;
+        font-size: 0.9rem;
+        text-align: center;
+        min-height: 1.2rem;
       }
     </style>
   </head>
   <body>
     <div id="login-box">
-      <h2>Área Protegida</h2>
-      <input
-        type="password"
-        id="senha"
-        placeholder="Digite a senha"
-        autocomplete="off"
-      />
-      <button onclick="entrar()">Entrar</button>
-      <p id="mensagem-erro"></p>
+      <h2>Login</h2>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Senha" />
+      <button id="btn-login">Entrar</button>
+      <div id="error-msg"></div>
     </div>
 
     <script>
-      const SENHA = "areamultis20" // Ajuste sua senha aqui
-
-      function entrar() {
-        const senhaDigitada = document.getElementById("senha").value.trim()
-        const erroEl = document.getElementById("mensagem-erro")
-
-        if (senhaDigitada === SENHA) {
-          sessionStorage.setItem("autenticado", "ok")
-          window.location.href = "dashboard.html"
-        } else {
-          erroEl.textContent = "Senha incorreta. Tente novamente."
-        }
+      // 🔧 SUA CONFIG FIREBASE AQUI:
+      const firebaseConfig = {
+        apiKey: "AIzaSyDgmpnI5eIEKfNO80VKpTCXv9v24gbHL8M",
+        authDomain: "luczutilityscript.firebaseapp.com",
+        databaseURL: "https://luczutilityscript-default-rtdb.firebaseio.com",
+        projectId: "luczutilityscript",
+        storageBucket: "luczutilityscript.appspot.com",
+        messagingSenderId: "833792829994",
+        appId: "1:833792829994:web:b1c5b0828f5af126f97153",
+        measurementId: "G-4RNEE09GC9",
       }
+      firebase.initializeApp(firebaseConfig)
 
-      // Permite enviar com ENTER
-      document
-        .getElementById("senha")
-        .addEventListener("keypress", function (e) {
-          if (e.key === "Enter") {
-            entrar()
-          }
-        })
+      const auth = firebase.auth()
+      const email = document.getElementById("email")
+      const password = document.getElementById("password")
+      const btnLogin = document.getElementById("btn-login")
+      const errorMsg = document.getElementById("error-msg")
+
+      btnLogin.addEventListener("click", () => {
+        auth
+          .signInWithEmailAndPassword(email.value, password.value)
+          .then(() => {
+            window.location.href = "dashboard.html"
+          })
+          .catch((err) => {
+            errorMsg.textContent = "Erro: " + err.message
+          })
+      })
     </script>
   </body>
 </html>
