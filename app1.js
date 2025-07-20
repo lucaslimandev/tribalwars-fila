@@ -33,8 +33,8 @@ function atualizarTabela() {
     const tempo = new Date(dados.timestamp)
     const minutosPassados = (Date.now() - tempo.getTime()) / 60000
 
-    const status = minutosPassados > 10 ? "Deslogado" : "Logado"
-    const statusColor = minutosPassados > 10 ? "#dc3545" : "#28a745"
+    const status = minutosPassados > 20 ? "Deslogado" : "Logado"
+    const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
 
     const playerPoints = dados.points
 
