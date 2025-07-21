@@ -37,8 +37,46 @@ function atualizarTabela() {
     const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
 
     const playerPoints = dados.points
-    const vpnName = dados.vpn
 
+    const jogadoresLucas = [
+      "Galasi",
+      "Icasa",
+      "Purificação Anual",
+      "GeneralZumbi",
+      "- Dexter -",
+      "urban play",
+      "ShadowViper1",
+      "Victor Von Doom",
+      "BB Wars",
+      "Sudeste",
+      "Senhor Tricolor",
+      "Niker",
+      "Senhor Cabelinho",
+      "DarkFalcon",
+      "IronStrike",
+    ]
+
+    const jogadoresGuilherme = [
+      "pressao55",
+      "Devver",
+      "Mauricio Revolta",
+      "Reddington",
+      "Rei Draxler",
+      "adrianvitorio09",
+      "Albert Einstein",
+      "Quantum Skill",
+      "o devasto",
+    ]
+
+    let vpnName = ""
+
+    if (jogadoresLucas.includes(jogador)) {
+      vpnName = "Lucas"
+    } else if (jogadoresGuilherme.includes(jogador)) {
+      vpnName = "Guilherme"
+    } else {
+      vpnName = "" // ou deixe vazio "", ou use o nome original
+    }
     const recursos = {
       madeira: Math.floor(
         dados.recursos.madeira +
