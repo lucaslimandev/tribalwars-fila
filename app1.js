@@ -27,6 +27,8 @@ let dadosCache = {}
 
 function atualizarTabela() {
   tabela.innerHTML = ""
+  let contLucas = 0
+  let contGuilherme = 0
 
   for (let jogador in dadosCache) {
     const dados = dadosCache[jogador]
@@ -69,7 +71,15 @@ function atualizarTabela() {
     ]
 
     let vpnName = ""
-
+    if (jogadoresLucas.includes(jogador)) {
+      vpnName = "Lucas"
+      if (status === "Logado") contLucas++
+    } else if (jogadoresGuilherme.includes(jogador)) {
+      vpnName = "Guilherme"
+      if (status === "Logado") contGuilherme++
+    } else {
+      vpnName = ""
+    }
     if (jogadoresLucas.includes(jogador)) {
       vpnName = "Lucas"
     } else if (jogadoresGuilherme.includes(jogador)) {
@@ -144,6 +154,40 @@ function atualizarTabela() {
 
     tabela.appendChild(linha)
   }
+  let alertaLucas = contLucas > 9
+  let alertaGuilherme = contGuilherme > 9
+
+  document.getElementById("contadores-vpn").innerHTML = `
+  <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+    <div style="
+      background: ${alertaLucas ? "#ffc107" : "#e0f7fa"};
+      color: ${alertaLucas ? "#8a6d3b" : "#00796b"};
+      border: 2px solid ${alertaLucas ? "#ffa000" : "#4db6ac"};
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    ">
+      👤 Lucas: ${contLucas} ${
+    alertaLucas ? "<strong>⚠️ Limite excedido!</strong>" : ""
+  }
+    </div>
+
+    <div style="
+      background: ${alertaGuilherme ? "#ffc107" : "#f1f8e9"};
+      color: ${alertaGuilherme ? "#8a6d3b" : "#33691e"};
+      border: 2px solid ${alertaGuilherme ? "#ffa000" : "#aed581"};
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    ">
+      👤 Guilherme: ${contGuilherme} ${
+    alertaGuilherme ? "<strong>⚠️ Limite excedido!</strong>" : ""
+  }
+    </div>
+  </div>
+`
 }
 
 function carregarDados() {
