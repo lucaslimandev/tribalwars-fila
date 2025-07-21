@@ -37,6 +37,7 @@ function atualizarTabela() {
     const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
 
     const playerPoints = dados.points
+    const vpnName = dados.vpn
 
     const recursos = {
       madeira: Math.floor(
@@ -93,6 +94,7 @@ function atualizarTabela() {
     linha.innerHTML = `
       <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
       <td>${jogador}</td>
+      <td>${vpnName}</td>
       <td>${playerPoints}</td>
       <td>${tempo.toLocaleString()}</td>
       <td>${recursos.madeira}</td>
