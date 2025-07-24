@@ -51,6 +51,30 @@ async function fetchData() {
       ironEl?.getAttribute("title")?.match(/(\d+)\s+por hora/)?.[1] || "0",
       10
     )
+    function converterTextoParaTimestamp(texto) {
+      const agora = new Date()
+      let dataBase = new Date(
+        agora.getFullYear(),
+        agora.getMonth(),
+        agora.getDate()
+      )
+
+      const match = texto.match(/(hoje|amanhã) às (\d{2}):(\d{2}):(\d{2})/)
+
+      if (!match) return null
+
+      const [, diaTexto, hora, minuto, segundo] = match.map((v, i) =>
+        i > 1 ? parseInt(v, 10) : v
+      )
+
+      if (diaTexto === "amanhã") {
+        dataBase.setDate(dataBase.getDate() + 1)
+      }
+
+      dataBase.setHours(hora, minuto, segundo, 0)
+
+      return dataBase.getTime() // timestamp em ms
+    }
 
     const fila = []
     const queue = doc.querySelectorAll("#buildqueue tr")
@@ -65,6 +89,7 @@ async function fetchData() {
           nome,
           nivel: parseInt(nivel),
           conclusao,
+          conclusao_timestamp: converterTextoParaTimestamp(conclusao),
         })
       }
     })

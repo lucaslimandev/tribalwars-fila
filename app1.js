@@ -48,7 +48,7 @@ function atualizarTabela() {
       "- Dexter -",
       "urban play",
       "ShadowViper1",
-      "Victor Von Doom",
+      "Victor von Doom",
       "BB Wars",
       "Sudeste",
       "Senhor Tricolor",
@@ -61,7 +61,7 @@ function atualizarTabela() {
     const jogadoresGuilherme = [
       "pressao55",
       "Devver",
-      "Mauricio Revolta",
+      "mauricio revolta",
       "Reddington",
       "Rei Draxler",
       "adrianvitorio09",
