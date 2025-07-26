@@ -157,11 +157,13 @@ function atualizarTabela() {
   <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
   <td>${jogador}</td>
   <td>${coordenadasTexto}</td>
-   <td>
-    <a href="${atacarLink}" target="_blank" style="text-decoration:none;">
-      <button>Atacar</button>
-    </a>
+    <td>
+    <button 
+      class="btn-atacar"
+      data-target-id="${villageIdJogador}"
+    >Atacar</button>
   </td>
+
   <td>${vpnName}</td>
   <td>${playerPoints}</td>
   <td>${tempo.toLocaleString()}</td>
@@ -260,6 +262,22 @@ function carregarJogadorPrincipal() {
       })
     })
 }
+document.getElementById("seletor-aldeia").addEventListener("change", () => {
+  const novaAldeiaId = document.getElementById("seletor-aldeia").value
+
+  document.querySelectorAll(".btn-atacar").forEach((btn) => {
+    const targetId = btn.getAttribute("data-target-id")
+    const novoLink = `https://brc2.tribalwars.com.br/game.php?village=${novaAldeiaId}&screen=place&target=${targetId}`
+
+    // Criar link e substituir botão
+    const linkWrapper = document.createElement("a")
+    linkWrapper.href = novoLink
+    linkWrapper.target = "_blank"
+    linkWrapper.appendChild(btn.cloneNode(true))
+
+    btn.replaceWith(linkWrapper)
+  })
+})
 
 carregarDados()
 carregarJogadorPrincipal()
