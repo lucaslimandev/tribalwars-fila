@@ -29,6 +29,7 @@ async function fetchData() {
 
     const playerName = game_data.player.name
     const playerPoints = game_data.player.points
+    const playerVillageId = game_data.village.id
 
     const woodEl = doc.querySelector("#wood")
     const stoneEl = doc.querySelector("#stone")
@@ -117,6 +118,8 @@ async function fetchData() {
     const dados = {
       timestamp: new Date().toISOString(),
       points: playerPoints,
+      villageId: playerVillageId,
+
       coordenadas: {
         coordX: coordX,
         coordY: coordY,

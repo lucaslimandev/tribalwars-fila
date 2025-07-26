@@ -143,19 +143,35 @@ function atualizarTabela() {
 
     const linha = document.createElement("tr")
 
+    const selectEl = document.getElementById("seletor-aldeia")
+    const aldeiaSelecionadaId = selectEl ? selectEl.value : null // aldeia selecionada no jogador principal
+
+    const villageIdJogador = dados.villageId || null // id da aldeia do jogador da linha (ajuste se necessário)
+
+    const atacarLink =
+      aldeiaSelecionadaId && villageIdJogador
+        ? `https://brc2.tribalwars.com.br/game.php?village=${aldeiaSelecionadaId}&screen=place&target=${villageIdJogador}`
+        : "#"
+
     linha.innerHTML = `
-      <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
-      <td>${jogador}</td>
-      <td>${coordenadasTexto}</td>
-      <td>${vpnName}</td>
-      <td>${playerPoints}</td>
-      <td>${tempo.toLocaleString()}</td>
-      <td>${recursos.madeira}</td>
-      <td>${recursos.argila}</td>
-      <td>${recursos.ferro}</td>
-      <td>${dados.recursos.armazenamento}</td>
-      <td>${filaHtml}</td>
-    `
+  <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
+  <td>${jogador}</td>
+  <td>${coordenadasTexto}</td>
+   <td>
+    <a href="${atacarLink}" target="_blank" style="text-decoration:none;">
+      <button>Atacar</button>
+    </a>
+  </td>
+  <td>${vpnName}</td>
+  <td>${playerPoints}</td>
+  <td>${tempo.toLocaleString()}</td>
+  <td>${recursos.madeira}</td>
+  <td>${recursos.argila}</td>
+  <td>${recursos.ferro}</td>
+  <td>${dados.recursos.armazenamento}</td>
+  <td>${filaHtml}</td>
+ 
+`
 
     tabela.appendChild(linha)
   }
