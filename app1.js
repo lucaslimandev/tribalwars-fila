@@ -145,13 +145,9 @@ function atualizarTabela() {
 
     const selectEl = document.getElementById("seletor-aldeia")
     const aldeiaSelecionadaId = selectEl ? selectEl.value : null // aldeia selecionada no jogador principal
+
     const villageIdJogador = dados.villageId || null // id da aldeia do jogador da linha (ajuste se necessário)
     console.log(villageIdJogador)
-
-    const pontosPrincipal = parseInt(game_data.player.points, 10)
-    const pontosAlvo = parseInt(dados.pontos || 0, 10)
-    const razao = pontosAlvo > 0 ? pontosPrincipal / pontosAlvo : 0
-    const razaoTexto = `${Math.floor(razao)}:1`
 
     const atacarLink =
       aldeiaSelecionadaId && villageIdJogador
@@ -161,6 +157,7 @@ function atualizarTabela() {
     linha.innerHTML = `
   <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
   <td>${jogador}</td>
+  <td>${coordenadasTexto}</td>
 <td>
   <a
     class="btn-atacar"
@@ -173,9 +170,6 @@ function atualizarTabela() {
 </td>
   <td>${vpnName}</td>
   <td>${playerPoints}</td>
-  <td class="col-razao" data-razao="${razao}">
-    ${razaoTexto}
-  </td>
   <td>${tempo.toLocaleString()}</td>
   <td>${recursos.madeira}</td>
   <td>${recursos.argila}</td>
@@ -272,9 +266,6 @@ function carregarJogadorPrincipal() {
       })
     })
 }
-
-carregarDados()
-carregarJogadorPrincipal()
 document.getElementById("seletor-aldeia").addEventListener("change", () => {
   const novaAldeiaId = document.getElementById("seletor-aldeia").value
 
@@ -284,23 +275,9 @@ document.getElementById("seletor-aldeia").addEventListener("change", () => {
   })
 })
 
-document.getElementById("filtro-razao").addEventListener("change", function () {
-  const modo = this.value
-  const linhas = document.querySelectorAll("#combined_table tbody tr")
 
-  linhas.forEach((linha) => {
-    const razaoColuna = linha.querySelector(".col-razao")
-    if (!razaoColuna) return
-
-    const razao = parseFloat(razaoColuna.dataset.razao || "0")
-
-    if (modo === "limite" && razao > 20) {
-      linha.style.display = "none"
-    } else {
-      linha.style.display = ""
-    }
-  })
-})
+carregarDados()
+carregarJogadorPrincipal()
 
 setInterval(() => {
   atualizarTabela() // atualiza recursos com base no tempo passado
