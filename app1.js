@@ -39,6 +39,10 @@ function atualizarTabela() {
     const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
 
     const playerPoints = dados.points
+    const coordX = dados.coordX ?? null
+    const coordY = dados.coordY ?? null
+    const coordenadasTexto =
+      coordX !== null && coordY !== null ? `(${coordX}|${coordY})` : "N/A"
 
     const jogadoresLucas = [
       "Galasi",
@@ -142,6 +146,7 @@ function atualizarTabela() {
     linha.innerHTML = `
       <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
       <td>${jogador}</td>
+      <td>${coordenadasTexto}</td>
       <td>${vpnName}</td>
       <td>${playerPoints}</td>
       <td>${tempo.toLocaleString()}</td>
