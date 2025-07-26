@@ -10,22 +10,22 @@
   </head>
   <body>
     <h1>Monitor de Recursos - Tribal Wars</h1>
-    <div id="contadores-vpn" style="margin: 15px 0;"></div>
+    <div id="contadores-vpn" style="margin: 15px 0"></div>
 
     <button onclick="logout()">Sair</button>
     <table id="players-table">
       <thead>
         <tr>
-          <th>Status</th>
-          <th>Jogador</th>
-          <th>VPN</th>
-          <th>Pontos</th>
-          <th>Última Atualização</th>
-          <th>Madeira</th>
-          <th>Argila</th>
-          <th>Ferro</th>
-          <th>Armazenamento</th>
-          <th>Fila de Construção</th>
+          <th data-sort="status">Status</th>
+          <th data-sort="jogador">Jogador</th>
+          <th data-sort="vpn">VPN</th>
+          <th data-sort="pontos">Pontos</th>
+          <th data-sort="ultima-atualizacao">Última Atualização</th>
+          <th data-sort="madeira">Madeira</th>
+          <th data-sort="argila">Argila</th>
+          <th data-sort="ferro">Ferro</th>
+          <th data-sort="armazenamento">Armazenamento</th>
+          <th data-sort="fila-construcao">Fila de Construção</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -42,5 +42,51 @@
       }
     </script>
     <script src="app1.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabela = document.getElementById("players-table")
+        const tbody = tabela.querySelector("tbody")
+        let ordemAscendente = true // Controle de ordem global (pode fazer por coluna se quiser)
+
+        tabela.querySelectorAll("th").forEach((th, index) => {
+          th.style.cursor = "pointer" // Mostra que é clicável
+          th.addEventListener("click", () => {
+            const sortKey = th.getAttribute("data-sort")
+            if (!sortKey) return
+
+            const linhasArray = Array.from(tbody.querySelectorAll("tr"))
+
+            linhasArray.sort((rowA, rowB) => {
+              const celA = rowA.cells[index].textContent.trim()
+              const celB = rowB.cells[index].textContent.trim()
+
+              // Tenta comparar como número, se não for número compara como texto
+              const numA = parseFloat(celA.replace(/[^\d.-]/g, ""))
+              const numB = parseFloat(celB.replace(/[^\d.-]/g, ""))
+
+              let comp
+              if (!isNaN(numA) && !isNaN(numB)) {
+                comp = numA - numB
+              } else {
+                comp = celA.localeCompare(celB, "pt-BR", { numeric: true })
+              }
+
+              return ordemAscendente ? comp : -comp
+            })
+
+            // Remove as linhas antigas
+            while (tbody.firstChild) {
+              tbody.removeChild(tbody.firstChild)
+            }
+
+            // Adiciona as linhas ordenadas
+            linhasArray.forEach((row) => tbody.appendChild(row))
+
+            // Alterna ordem para próxima vez
+            ordemAscendente = !ordemAscendente
+          })
+        })
+      })
+    </script>
   </body>
 </html>
