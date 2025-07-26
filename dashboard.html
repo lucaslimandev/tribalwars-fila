@@ -32,15 +32,23 @@
     </div>
 
     <button onclick="logout()">Sair</button>
+
+    <label for="filtro-razao">Filtrar:</label>
+    <select id="filtro-razao">
+      <option value="todos">Mostrar todos</option>
+      <option value="limite">Esconder razão > 20:1</option>
+    </select>
+
     <table id="players-table">
       <thead>
         <tr>
           <th data-sort="status">Status</th>
           <th data-sort="jogador">Jogador</th>
           <th data-sort="coordenadas">Coordenadas</th>
-          <th data-sort="vpn">VPN</th>
-          <th data-sort="pontos">Pontos</th>
           <th data-sort="atacar">Atacar</th>
+          <th data-sort="vpn">VPN</th>
+          <th data-sort="pontos">Razão</th>
+          <th data-sort="razao">Pontos</th>
           <th data-sort="ultima-atualizacao">Última Atualização</th>
           <th data-sort="madeira">Madeira</th>
           <th data-sort="argila">Argila</th>
