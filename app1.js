@@ -145,8 +145,8 @@ function atualizarTabela() {
 
     const selectEl = document.getElementById("seletor-aldeia")
     const aldeiaSelecionadaId = selectEl ? selectEl.value : null // aldeia selecionada no jogador principal
-
     const villageIdJogador = dados.villageId || null // id da aldeia do jogador da linha (ajuste se necessário)
+    console.log(villageIdJogador)
 
     const atacarLink =
       aldeiaSelecionadaId && villageIdJogador
