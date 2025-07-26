@@ -203,8 +203,50 @@ function carregarDados() {
       atualizarTabela()
     })
 }
+function carregarJogadorPrincipal() {
+  const nomeEl = document.getElementById("nome-jogador")
+  const pontosEl = document.getElementById("pontos-jogador")
+  const selectEl = document.getElementById("seletor-aldeia")
+  const clEl = document.getElementById("cl-aldeia")
+
+  db.ref("JogadorPrincipal")
+    .once("value")
+    .then((snapshot) => {
+      const dados = snapshot.val()
+      if (!dados) return
+
+      nomeEl.textContent = dados.conta || "Desconhecido"
+      pontosEl.textContent = dados.pontos || 0
+
+      const aldeias = dados.aldeias || {}
+
+      // Limpa o select
+      selectEl.innerHTML = ""
+
+      for (let id in aldeias) {
+        const { coordX, coordY, cl } = aldeias[id]
+        const option = document.createElement("option")
+        option.value = id
+        option.textContent = `(${coordX}|${coordY})`
+        option.dataset.cl = cl
+        selectEl.appendChild(option)
+      }
+
+      // Atualiza o valor inicial de CL
+      if (selectEl.options.length > 0) {
+        clEl.textContent = selectEl.options[0].dataset.cl || 0
+      }
+
+      // Listener de mudança
+      selectEl.addEventListener("change", function () {
+        const clAtual = this.selectedOptions[0].dataset.cl
+        clEl.textContent = clAtual || "-"
+      })
+    })
+}
 
 carregarDados()
+carregarJogadorPrincipal()
 
 setInterval(() => {
   atualizarTabela() // atualiza recursos com base no tempo passado

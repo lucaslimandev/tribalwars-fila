@@ -12,6 +12,25 @@
     <h1>Monitor de Recursos - Tribal Wars</h1>
     <div id="contadores-vpn" style="margin: 15px 0"></div>
 
+    <div
+      id="jogador-principal-info"
+      style="
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      "
+    >
+      <strong>Jogador Principal:</strong>
+      <span id="nome-jogador">Carregando...</span><br />
+      <strong>Pontos:</strong> <span id="pontos-jogador">-</span><br />
+      <label for="seletor-aldeia"><strong>Aldeia:</strong></label>
+      <select id="seletor-aldeia" style="margin-left: 10px"></select>
+      <span style="margin-left: 20px"
+        ><strong>CLs:</strong> <span id="cl-aldeia">-</span></span
+      >
+    </div>
+
     <button onclick="logout()">Sair</button>
     <table id="players-table">
       <thead>
