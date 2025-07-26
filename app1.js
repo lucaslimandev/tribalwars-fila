@@ -39,8 +39,8 @@ function atualizarTabela() {
     const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
 
     const playerPoints = dados.points
-    const coordX = dados.coordX ?? null
-    const coordY = dados.coordY ?? null
+    const coordX = dados.coordenadas?.coordX ?? null
+    const coordY = dados.coordenadas?.coordY ?? null
     const coordenadasTexto =
       coordX !== null && coordY !== null ? `(${coordX}|${coordY})` : "N/A"
 
