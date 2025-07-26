@@ -147,7 +147,6 @@ function atualizarTabela() {
     const aldeiaSelecionadaId = selectEl ? selectEl.value : null // aldeia selecionada no jogador principal
 
     const villageIdJogador = dados.villageId || null // id da aldeia do jogador da linha (ajuste se necessário)
-    console.log(villageIdJogador)
 
     const atacarLink =
       aldeiaSelecionadaId && villageIdJogador
@@ -158,16 +157,11 @@ function atualizarTabela() {
   <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
   <td>${jogador}</td>
   <td>${coordenadasTexto}</td>
-<td>
-  <a
-    class="btn-atacar"
-    data-target-id="${villageIdJogador}"
-    href="https://brc2.tribalwars.com.br/game.php?village=${aldeiaSelecionadaId}&screen=place&target=${villageIdJogador}"
-    target="_blank"
-  >
-    Atacar
-  </a>
-</td>
+    <td>
+    <a href="${atacarLink}" target="_blank" style="text-decoration:none;">
+      <button>Atacar</button>
+    </a>
+  </td>
   <td>${vpnName}</td>
   <td>${playerPoints}</td>
   <td>${tempo.toLocaleString()}</td>
@@ -176,7 +170,7 @@ function atualizarTabela() {
   <td>${recursos.ferro}</td>
   <td>${dados.recursos.armazenamento}</td>
   <td>${filaHtml}</td>
- 
+
 `
 
     tabela.appendChild(linha)
@@ -266,15 +260,6 @@ function carregarJogadorPrincipal() {
       })
     })
 }
-document.getElementById("seletor-aldeia").addEventListener("change", () => {
-  const novaAldeiaId = document.getElementById("seletor-aldeia").value
-
-  document.querySelectorAll(".btn-atacar").forEach((link) => {
-    const targetId = link.getAttribute("data-target-id")
-    link.href = `https://brc2.tribalwars.com.br/game.php?village=${novaAldeiaId}&screen=place&target=${targetId}`
-  })
-})
-
 
 carregarDados()
 carregarJogadorPrincipal()
