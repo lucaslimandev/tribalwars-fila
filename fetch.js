@@ -12,7 +12,8 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
 }
-
+let coordX
+let coordY
 const db = firebase.database()
 
 async function fetchData() {
@@ -33,6 +34,25 @@ async function fetchData() {
     const stoneEl = doc.querySelector("#stone")
     const ironEl = doc.querySelector("#iron")
     const storageEl = doc.querySelector("#storage")
+
+    const menuRow = document.getElementById("menu_row2")
+
+    if (menuRow) {
+      const boxItems = menuRow.querySelectorAll(".box-item b.nowrap")
+      for (const item of boxItems) {
+        const match = item.textContent.match(/\((\d+)\|(\d+)\)/)
+        if (match) {
+          const x = parseInt(match[1], 10)
+          const y = parseInt(match[2], 10)
+          coordX = x
+          coordY = y
+          console.log("Coordenadas:", { x, y })
+          break // Remove isso se quiser pegar mais de uma coordenada
+        }
+      }
+    } else {
+      console.warn('Elemento com id="menu_row2" não encontrado.')
+    }
 
     const madeira = parseInt(woodEl?.innerText || "0", 10)
     const argila = parseInt(stoneEl?.innerText || "0", 10)
@@ -97,6 +117,10 @@ async function fetchData() {
     const dados = {
       timestamp: new Date().toISOString(),
       points: playerPoints,
+      coordenadas: {
+        coordX: coordX,
+        coordY: coordY,
+      },
       recursos: { madeira, argila, ferro, armazenamento },
       producao_por_hora: {
         madeira: prodMadeira,
