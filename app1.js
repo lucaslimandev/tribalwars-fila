@@ -152,7 +152,7 @@ function atualizarTabela() {
       aldeiaSelecionadaId && villageIdJogador
         ? `https://brc2.tribalwars.com.br/game.php?village=${aldeiaSelecionadaId}&screen=place&target=${villageIdJogador}`
         : "#"
-
+    console.log(atacarLink)
     linha.innerHTML = `
   <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
   <td>${jogador}</td>
