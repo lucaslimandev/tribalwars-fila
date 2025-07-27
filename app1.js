@@ -127,7 +127,7 @@ function atualizarTabela(coordSelecionada = {}) {
 
     console.log(atacarLink)
     console.log(villageIdJogador)
-
+    
     const armazenamento = dados.recursos.armazenamento
     // Verifica percentual e define cor para cada recurso
     const corRecurso = (valor) => {
@@ -144,6 +144,12 @@ function atualizarTabela(coordSelecionada = {}) {
   <td>${coordenadasTexto}</td>
   <td>${distancia}</td>
   <td>${atacarBtn}</td>
+  <td>${Math.floor(
+    (parseInt(recursos.madeira, 10) +
+      parseInt(recursos.argila, 10) +
+      parseInt(recursos.ferro, 10)) /
+      80
+  )}</td>
   <td>${playerPoints}</td>
   <td>${tempo.toLocaleString()}</td>
   <td style="${corRecurso(recursos.madeira)}">${recursos.madeira}</td>
@@ -179,7 +185,7 @@ function carregarJogadorPrincipal() {
   const pontosEl = document.getElementById("pontos-jogador")
   const selectEl = document.getElementById("seletor-aldeia")
   const clEl = document.getElementById("cl-aldeia")
-
+  
   db.ref("JogadorPrincipal")
     .once("value")
     .then((snapshot) => {
