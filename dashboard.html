@@ -2,57 +2,53 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Dashboard</title>
+    <title>Monitor de Recursos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Monitor de Recursos - Tribal Wars</h1>
-    <div id="contadores-vpn" style="margin: 15px 0"></div>
+    <main>
+      <h1>🎯 Monitor de Recursos</h1>
 
-    <div
-      id="jogador-principal-info"
-      style="
-        margin-bottom: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-      "
-    >
-      <strong>Jogador Principal:</strong>
-      <span id="nome-jogador">Carregando...</span><br />
-      <strong>Pontos:</strong> <span id="pontos-jogador">-</span><br />
-      <label for="seletor-aldeia"><strong>Aldeia:</strong></label>
-      <select id="seletor-aldeia" style="margin-left: 10px"></select>
-      <span style="margin-left: 20px"
-        ><strong>CLs:</strong> <span id="cl-aldeia">-</span></span
-      >
-    </div>
+      <section class="info-principal">
+        <div>
+          <strong>Jogador:</strong> <span id="nome-jogador">Carregando...</span>
+        </div>
+        <div><strong>Pontos:</strong> <span id="pontos-jogador">-</span></div>
+        <div class="seletor">
+          <label for="seletor-aldeia">Aldeia:</label>
+          <select id="seletor-aldeia"></select>
+        </div>
+        <div><strong>CLs:</strong> <span id="cl-aldeia">-</span></div>
+        <button id="logout-btn" onclick="logout()">Sair</button>
+      </section>
 
-    <button onclick="logout()">Sair</button>
+      <div id="contadores-vpn"></div>
 
-    <table id="players-table">
-      <thead>
-        <tr>
-          <th data-sort="status">Status</th>
-          <th data-sort="jogador">Jogador</th>
-          <th data-sort="coordenadas">Coordenadas</th>
-          <th data-sort="atacar">Atacar</th>
-          <th data-sort="vpn">VPN</th>
-          <th data-sort="pontos">Pontos</th>
-          <th data-sort="ultima-atualizacao">Última Atualização</th>
-          <th data-sort="madeira">Madeira</th>
-          <th data-sort="argila">Argila</th>
-          <th data-sort="ferro">Ferro</th>
-          <th data-sort="armazenamento">Armazenamento</th>
-          <th data-sort="fila-construcao">Fila de Construção</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
+      <section class="tabela-container">
+        <table id="players-table">
+          <thead>
+            <tr>
+              <th data-sort="status">Status</th>
+              <th data-sort="jogador">Jogador</th>
+              <th data-sort="coordenadas">Coords</th>
+              <th data-sort="distancia">Distância</th>
+              <th data-sort="atacar">Atacar</th>
+              <th data-sort="pontos">Pontos</th>
+              <th data-sort="ultima-atualizacao">Atualização</th>
+              <th data-sort="madeira">Madeira</th>
+              <th data-sort="argila">Argila</th>
+              <th data-sort="ferro">Ferro</th>
+              <th data-sort="armazenamento">Armazém</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
     <script>
       function logout() {
         firebase

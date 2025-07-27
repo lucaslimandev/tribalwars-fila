@@ -23,12 +23,17 @@ firebase.auth().onAuthStateChanged((user) => {
 const db = firebase.database()
 const tabela = document.querySelector("#players-table tbody")
 
-let dadosCache = {}
+function calcularDistancia(x1, y1, x2, y2) {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  return Math.sqrt(dx * dx + dy * dy).toFixed(2)
+}
 
-function atualizarTabela() {
+let dadosCache = {}
+let pontosPrincipal
+function atualizarTabela(coordSelecionada = {}) {
+  const { coordX: selecX, coordY: selecY } = coordSelecionada
   tabela.innerHTML = ""
-  let contLucas = 0
-  let contGuilherme = 0
 
   for (let jogador in dadosCache) {
     const dados = dadosCache[jogador]
@@ -36,61 +41,19 @@ function atualizarTabela() {
     const minutosPassados = (Date.now() - tempo.getTime()) / 60000
 
     const status = minutosPassados > 20 ? "Deslogado" : "Logado"
-    const statusColor = minutosPassados > 20 ? "#dc3545" : "#28a745"
+    const statusClass =
+      minutosPassados > 20 ? "status-deslogado" : "status-logado"
 
     const playerPoints = dados.points
     const coordX = dados.coordenadas?.coordX ?? null
     const coordY = dados.coordenadas?.coordY ?? null
     const coordenadasTexto =
       coordX !== null && coordY !== null ? `(${coordX}|${coordY})` : "N/A"
-
-    const jogadoresLucas = [
-      "Galasi",
-      "Icasa",
-      "Purificação Anual",
-      "GeneralZumbi",
-      "- Dexter -",
-      "urban play",
-      "ShadowViper1",
-      "Victor von Doom",
-      "BB Wars",
-      "Sudeste",
-      "Senhor Tricolor",
-      "Niker",
-      "Senhor Cabelinho",
-      "DarkFalcon",
-      "IronStrike",
-    ]
-
-    const jogadoresGuilherme = [
-      "pressao55",
-      "Devver",
-      "mauricio revolta",
-      "Reddington",
-      "Rei Draxler",
-      "adrianvitorio09",
-      "Albert Einstein",
-      "Quantum Skill",
-      "o devasto",
-    ]
-
-    let vpnName = ""
-    if (jogadoresLucas.includes(jogador)) {
-      vpnName = "Lucas"
-      if (status === "Logado") contLucas++
-    } else if (jogadoresGuilherme.includes(jogador)) {
-      vpnName = "Guilherme"
-      if (status === "Logado") contGuilherme++
-    } else {
-      vpnName = ""
+    let distancia = "-"
+    if (selecX && selecY && coordX !== null && coordY !== null) {
+      distancia = calcularDistancia(selecX, selecY, coordX, coordY)
     }
-    if (jogadoresLucas.includes(jogador)) {
-      vpnName = "Lucas"
-    } else if (jogadoresGuilherme.includes(jogador)) {
-      vpnName = "Guilherme"
-    } else {
-      vpnName = "" // ou deixe vazio "", ou use o nome original
-    }
+
     const recursos = {
       madeira: Math.floor(
         dados.recursos.madeira +
@@ -144,71 +107,63 @@ function atualizarTabela() {
     const linha = document.createElement("tr")
 
     const selectEl = document.getElementById("seletor-aldeia")
-    const aldeiaSelecionadaId = selectEl ? selectEl.value : null // aldeia selecionada no jogador principal
-
-    const villageIdJogador = dados.villageId || null // id da aldeia do jogador da linha (ajuste se necessário)
+    const aldeiaSelecionadaId = selectEl ? selectEl.value : null
+    const villageIdJogador = dados.villageId || null
 
     const atacarLink =
       aldeiaSelecionadaId && villageIdJogador
         ? `https://brc2.tribalwars.com.br/game.php?village=${aldeiaSelecionadaId}&screen=place&target=${villageIdJogador}`
         : "#"
+
+    const atacarBtn =
+      aldeiaSelecionadaId &&
+      villageIdJogador &&
+      pontosPrincipal / playerPoints < 20
+        ? `
+      <a href="${atacarLink}" target="_blank" class="ataque-link">
+        <button class="botao-atacar">⚔️ Atacar</button>
+      </a>`
+        : `<button class="botao-atacar" disabled>Selecionar aldeia</button>`
+
     console.log(atacarLink)
+    console.log(villageIdJogador)
+
+    const armazenamento = dados.recursos.armazenamento
+    // Verifica percentual e define cor para cada recurso
+    const corRecurso = (valor) => {
+      const porcentagem = (valor / armazenamento) * 100
+      if (porcentagem >= 100) return "color: red; font-weight: bold"
+      if (porcentagem >= 75) return "color: orange; font-weight: bold"
+      return ""
+    }
     linha.innerHTML = `
-  <td style="background:${statusColor}; color: white; font-weight: bold">${status}</td>
+  <td class="status-cell">
+  <span class="status-indicador ${statusClass}" title="${status}"></span>
+</td>
   <td>${jogador}</td>
   <td>${coordenadasTexto}</td>
-    <td>
-    <a href="${atacarLink}" target="_blank" style="text-decoration:none;">
-      <button>Atacar</button>
-    </a>
-  </td>
-  <td>${vpnName}</td>
+  <td>${distancia}</td>
+  <td>${atacarBtn}</td>
   <td>${playerPoints}</td>
   <td>${tempo.toLocaleString()}</td>
-  <td>${recursos.madeira}</td>
-  <td>${recursos.argila}</td>
-  <td>${recursos.ferro}</td>
+  <td style="${corRecurso(recursos.madeira)}">${recursos.madeira}</td>
+  <td style="${corRecurso(recursos.argila)}">${recursos.argila}</td>
+  <td style="${corRecurso(recursos.ferro)}">${recursos.ferro}</td>
   <td>${dados.recursos.armazenamento}</td>
-  <td>${filaHtml}</td>
 
 `
 
     tabela.appendChild(linha)
   }
-  let alertaLucas = contLucas > 9
-  let alertaGuilherme = contGuilherme > 9
 
-  document.getElementById("contadores-vpn").innerHTML = `
-  <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-    <div style="
-      background: ${alertaLucas ? "#ffc107" : "#e0f7fa"};
-      color: ${alertaLucas ? "#8a6d3b" : "#00796b"};
-      border: 2px solid ${alertaLucas ? "#ffa000" : "#4db6ac"};
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-    ">
-      👤 Lucas: ${contLucas} ${
-    alertaLucas ? "<strong>⚠️ Limite excedido!</strong>" : ""
-  }
-    </div>
-
-    <div style="
-      background: ${alertaGuilherme ? "#ffc107" : "#f1f8e9"};
-      color: ${alertaGuilherme ? "#8a6d3b" : "#33691e"};
-      border: 2px solid ${alertaGuilherme ? "#ffa000" : "#aed581"};
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-    ">
-      👤 Guilherme: ${contGuilherme} ${
-    alertaGuilherme ? "<strong>⚠️ Limite excedido!</strong>" : ""
-  }
-    </div>
-  </div>
-`
+  document.querySelectorAll(".ataque-link .botao-atacar").forEach((botao) => {
+    botao.addEventListener("click", (e) => {
+      e.target.classList.add("ataque-animacao")
+      setTimeout(() => {
+        e.target.classList.remove("ataque-animacao")
+      }, 500)
+    })
+  })
 }
 
 function carregarDados() {
@@ -233,35 +188,57 @@ function carregarJogadorPrincipal() {
 
       nomeEl.textContent = dados.conta || "Desconhecido"
       pontosEl.textContent = dados.pontos || 0
+      pontosPrincipal = parseInt(pontosEl.textContent, 10)
 
       const aldeias = dados.aldeias || {}
-
       // Limpa o select
       selectEl.innerHTML = ""
 
-      for (let id in aldeias) {
-        const { coordX, coordY, cl } = aldeias[id]
+      // Adiciona a primeira opção padrão
+      const emptyOption = document.createElement("option")
+      emptyOption.value = ""
+      emptyOption.textContent = "Selecionar aldeia"
+      emptyOption.disabled = true
+      emptyOption.selected = true
+      selectEl.appendChild(emptyOption)
+
+      // Ordena as aldeias por nome
+      const aldeiasOrdenadas = Object.entries(aldeias).sort(([, a], [, b]) => {
+        const nomeA = a.nome || `(${a.coordX}|${a.coordY})`
+        const nomeB = b.nome || `(${b.coordX}|${b.coordY})`
+        return nomeA.localeCompare(nomeB)
+      })
+
+      // Preenche as aldeias
+      aldeiasOrdenadas.forEach(([id, dadosAldeia]) => {
+        const { coordX, coordY, cl, nome } = dadosAldeia
         const option = document.createElement("option")
+        option.textContent = nome || `(${coordX}|${coordY})`
         option.value = id
-        option.textContent = `(${coordX}|${coordY})`
+        option.dataset.coordX = coordX
+        option.dataset.coordY = coordY
         option.dataset.cl = cl
         selectEl.appendChild(option)
-      }
+      })
 
-      // Atualiza o valor inicial de CL
-      if (selectEl.options.length > 0) {
-        clEl.textContent = selectEl.options[0].dataset.cl || 0
-      }
+      clEl.textContent = "-"
 
-      // Listener de mudança
       selectEl.addEventListener("change", function () {
-        const clAtual = this.selectedOptions[0].dataset.cl
+        const selected = this.selectedOptions[0]
+        const clAtual = selected.dataset.cl
+        const coordX = selected.dataset.coordX
+        const coordY = selected.dataset.coordY
+
         clEl.textContent = clAtual || "-"
+
+        // 🔁 Atualiza a tabela ou outras partes da UI
+        atualizarTabela({ coordX, coordY }) // <-- agora você pode usar as coordenadas aqui
       })
     })
+
+  carregarDados()
 }
 
-carregarDados()
 carregarJogadorPrincipal()
 
 setInterval(() => {
