@@ -127,7 +127,7 @@ function atualizarTabela(coordSelecionada = {}) {
 
     console.log(atacarLink)
     console.log(villageIdJogador)
-    
+
     const armazenamento = dados.recursos.armazenamento
     // Verifica percentual e define cor para cada recurso
     const corRecurso = (valor) => {
@@ -185,7 +185,7 @@ function carregarJogadorPrincipal() {
   const pontosEl = document.getElementById("pontos-jogador")
   const selectEl = document.getElementById("seletor-aldeia")
   const clEl = document.getElementById("cl-aldeia")
-  
+
   db.ref("JogadorPrincipal")
     .once("value")
     .then((snapshot) => {
@@ -246,11 +246,3 @@ function carregarJogadorPrincipal() {
 }
 
 carregarJogadorPrincipal()
-
-setInterval(() => {
-  atualizarTabela() // atualiza recursos com base no tempo passado
-}, 60 * 1000)
-
-setInterval(() => {
-  carregarDados() // atualiza do banco a cada 5 min para novos dados
-}, 5 * 60 * 1000)
