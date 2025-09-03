@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resumo de Tropas – Fofox (Firebase Realtime)</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #0f1730;
+        --muted: #93a0b8;
+        --text: #e7ecf5;
+        --line: #1e2745;
+        --accent: #7aa2ff;
+        --ok: #22c55e;
+        --warn: #f59e0b;
+        --chip: #172245;
+        --card: #101a34;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          "Helvetica Neue", Arial, Inter, sans-serif;
+        background: linear-gradient(180deg, #0b1020, #0b1226) fixed;
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: auto;
+        padding: 20px;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.3px;
+      }
+      .badge {
+        font-size: 12px;
+        color: var(--muted);
+        border: 1px dashed #2b365f;
+        border-radius: 999px;
+        padding: 6px 10px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr repeat(4, minmax(120px, auto));
+        gap: 10px;
+      }
+      input,
+      select,
+      button {
+        font: inherit;
+        border: 1px solid #253058;
+        background: #0e1630;
+        color: var(--text);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: #41519a;
+      }
+      .toggle {
+        display: flex;
+        gap: 6px;
+        background: #0e1630;
+        border: 1px solid #253058;
+        border-radius: 12px;
+        padding: 6px;
+      }
+      .toggle button {
+        background: transparent;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 8px;
+      }
+      .toggle .active {
+        background: #12204a;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .stat h3 {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .stat .v {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .view-tabs {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Cards */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .title {
+        font-weight: 700;
+      }
+      .coords {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .chip {
+        background: var(--chip);
+        border: 1px solid #24305d;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+        color: #c7d4ff;
+      }
+
+      .bar {
+        height: 8px;
+        background: #0e1630;
+        border: 1px solid #22305c;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #5e8bff, #7aa2ff);
+      }
+      .meters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .meter {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 8px;
+        align-items: center;
+      }
+      .meter small {
+        color: var(--muted);
+      }
+
+      /* Table */
+      .tablewrap {
+        margin-top: 14px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        background: #0f1732;
+        border-bottom: 1px solid var(--line);
+        color: #bcd2ff;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #142045;
+        text-align: center;
+      }
+      tbody tr:hover {
+        background: #0e1630;
+      }
+      th.sortable {
+        cursor: pointer;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .right {
+        justify-self: end;
+      }
+
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 10px 2px;
+        color: var(--muted);
+      }
+      .status-row b {
+        color: var(--text);
+      }
+
+      @media (max-width: 1024px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 720px) {
+        .controls {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Resumo de Tropas – <span id="playerName">(carregando)</span></h1>
+        <span class="badge"
+          >Firebase Realtime • Sem localStorage • Tempo real</span
+        >
+      </header>
+
+      <section class="panel">
+        <div class="controls">
+          <input
+            id="path"
+            placeholder="Caminho no DB"
+            value="jogadores/fofox"
+          />
+          <select id="ordem">
+            <option value="-total.spear">Ordenar: Lanceiros ↓</option>
+            <option value="-total.sword">Ordenar: Espadas ↓</option>
+            <option value="-total.axe">Ordenar: Machados ↓</option>
+            <option value="-total.light">Ordenar: Cavalaria leve ↓</option>
+            <option value="-total.heavy">Ordenar: Cavalaria pesada ↓</option>
+            <option value="-total.ram">Ordenar: Aríetes ↓</option>
+            <option value="-total.catapult">Ordenar: Catapultas ↓</option>
+            <option value="-total.spy">Ordenar: Batedores ↓</option>
+            <option value="nome">Ordenar: Nome A–Z</option>
+          </select>
+          <div class="toggle" role="tablist" aria-label="Tipo de contagem">
+            <button id="btnTotal" class="active" aria-selected="true">
+              Total
+            </button>
+            <button id="btnFora">Fora</button>
+          </div>
+          <div class="toggle" role="tablist" aria-label="Modo de visualização">
+            <button id="btnCards" class="active">Cartões</button>
+            <button id="btnTable">Tabela</button>
+          </div>
+          <button id="btnAssinar">Assinar caminho</button>
+        </div>
+
+        <div class="status-row">
+          <div id="status">⏳ Conectando…</div>
+          <div>Jogador: <b id="playerInline">—</b></div>
+        </div>
+
+        <div class="stats" id="stats"></div>
+
+        <div id="cards" class="grid"></div>
+        <div id="table" class="tablewrap" style="display: none">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-k="nome">Aldeia</th>
+                <th class="sortable" data-k="coords">Coordenadas</th>
+                <th class="sortable" data-k="continente">Continente</th>
+                <th class="sortable" data-k="spear">Lanceiros</th>
+                <th class="sortable" data-k="sword">Espadas</th>
+                <th class="sortable" data-k="axe">Machados</th>
+                <th class="sortable" data-k="light">Leves</th>
+                <th class="sortable" data-k="heavy">Pesados</th>
+                <th class="sortable" data-k="ram">Aríetes</th>
+                <th class="sortable" data-k="catapult">Catapultas</th>
+                <th class="sortable" data-k="spy">Exploradores</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="muted" style="margin-top: 10px">
+        Se preferir, altere o caminho (ex.: <code>jogadores/outroJogador</code>)
+        e clique em <b>Assinar caminho</b>.
+      </p>
+    </div>
+
+    <!-- Firebase v10 (modular) via ES Modules -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        off,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+
+      // ✅ Seu config
+      const firebaseConfig = {
+        apiKey: "AIzaSyDgmpnI5eIEKfNO80VKpTCXv9v24gbHL8M",
+        authDomain: "luczutilityscript.firebaseapp.com",
+        databaseURL: "https://luczutilityscript-default-rtdb.firebaseio.com",
+        projectId: "luczutilityscript",
+        storageBucket: "luczutilityscript.appspot.com",
+        messagingSenderId: "833792829994",
+        appId: "1:833792829994:web:b1c5b0828f5af126f97153",
+        measurementId: "G-4RNEE09GC9",
+      }
+
+      // 🔹 Estado
+      let unsubscribeRef = null // guarda ref atual para poder desinscrever
+      let dados = null // snapshot atual (estrutura completa do jogador)
+      let aldeias = [] // cache das aldeias
+      let modo = "total" // 'total' ou 'fora'
+      let view = "cards" // 'cards' ou 'table'
+      let ordem = "-total.spear"
+
+      // 🔹 Elementos
+      const el = {
+        playerName: document.getElementById("playerName"),
+        playerInline: document.getElementById("playerInline"),
+        status: document.getElementById("status"),
+        path: document.getElementById("path"),
+        ordem: document.getElementById("ordem"),
+        btnTotal: document.getElementById("btnTotal"),
+        btnFora: document.getElementById("btnFora"),
+        btnCards: document.getElementById("btnCards"),
+        btnTable: document.getElementById("btnTable"),
+        btnAssinar: document.getElementById("btnAssinar"),
+        stats: document.getElementById("stats"),
+        cards: document.getElementById("cards"),
+        table: document.getElementById("table"),
+        tbody: document.getElementById("tbody"),
+      }
+
+      function setStatus(text, kind = "info") {
+        const color =
+          kind === "ok"
+            ? "var(--ok)"
+            : kind === "warn"
+            ? "var(--warn)"
+            : kind === "err"
+            ? "#ef4444"
+            : "var(--muted)"
+        el.status.style.color = color
+        el.status.textContent = text
+      }
+
+      const fmt = (n) => (n || 0).toLocaleString("pt-BR")
+      const byPath = (obj, path) =>
+        path.split(".").reduce((o, k) => o?.[k], obj)
+
+      function somatorio(chave) {
+        return aldeias.reduce((acc, a) => acc + (a?.[modo]?.[chave] || 0), 0)
+      }
+
+      function renderStats() {
+        const items = [
+          ["Aldeias", aldeias.length],
+          ["Lanceiros", somatorio("spear")],
+          ["Espadas", somatorio("sword")],
+          ["Machados", somatorio("axe")],
+          ["Leves", somatorio("light")],
+          ["Pesados", somatorio("heavy")],
+          ["Aríetes", somatorio("ram")],
+          ["Catapultas", somatorio("catapult")],
+          ["Batedores", somatorio("spy")],
+        ]
+        el.stats.innerHTML = items
+          .map(
+            ([k, v]) =>
+              `<div class="stat"><h3>${k}</h3><div class="v">${fmt(
+                v
+              )}</div></div>`
+          )
+          .join("")
+      }
+
+      function maxFor(keys, arr) {
+        const m = {}
+        keys.forEach(
+          (k) => (m[k] = Math.max(1, ...arr.map((a) => a?.[modo]?.[k] || 0)))
+        )
+        return m
+      }
+
+      function filtrarOrdenar(arr) {
+        const key = el.ordem.value || ordem
+        ordem = key
+        const desc = key.startsWith("-")
+        const path = desc ? key.slice(1) : key
+        arr.sort((A, B) => {
+          const a = path.includes(".") ? byPath(A, path) : A[path]
+          const b = path.includes(".") ? byPath(B, path) : B[path]
+          if (typeof a === "number" && typeof b === "number")
+            return desc ? b - a : a - b
+          return desc
+            ? String(b).localeCompare(String(a))
+            : String(a).localeCompare(String(b))
+        })
+        return arr
+      }
+
+      function renderCards() {
+        const arr = filtrarOrdenar(aldeias.slice())
+        const keys = [
+          "spear",
+          "sword",
+          "axe",
+          "light",
+          "heavy",
+          "ram",
+          "catapult",
+          "spy",
+        ]
+        const MAX = maxFor(keys, arr)
+        el.cards.innerHTML = arr
+          .map((a) => {
+            const c = a[modo] || {}
+            return `
+        <article class="card" aria-label="${a.nome}">
+          <div class="head">
+            <div>
+              <div class="title">${a.nome}</div>
+              <div class="muted">ID ${a.id} • ${a.continente}</div>
+            </div>
+            <div class="coords">${a.coords}</div>
+          </div>
+          <div class="chips">
+            <span class="chip">Lanceiros: <b>${fmt(c.spear)}</b></span>
+            <span class="chip">Espadas: <b>${fmt(c.sword)}</b></span>
+            <span class="chip">Machados: <b>${fmt(c.axe)}</b></span>
+            <span class="chip">Leves: <b>${fmt(c.light)}</b></span>
+            <span class="chip">Pesados: <b>${fmt(c.heavy)}</b></span>
+            <span class="chip">Arietes: <b>${fmt(c.ram)}</b></span>
+            <span class="chip">Catapultas: <b>${fmt(c.catapult)}</b></span>
+            <span class="chip">Exploradores: <b>${fmt(c.spy)}</b></span>
+          </div>
+          <div class="meters">
+            ${keys
+              .map((k) => {
+                const v = c[k] || 0
+                const w = Math.round((v / MAX[k]) * 100)
+                const label = {
+                  spear: "Lanceiros",
+                  sword: "Espadas",
+                  axe: "Machados",
+                  light: "Leves",
+                  heavy: "Pesados",
+                  ram: "Aríetes",
+                  catapult: "Catapultas",
+                  spy: "Batedores",
+                }[k]
+                return `<div class="meter"><small>${label}</small><div class="bar"><span style="width:${w}%"></span></div></div>`
+              })
+              .join("")}
+          </div>
+        </article>`
+          })
+          .join("")
+      }
+
+      function renderTable() {
+        const arr = filtrarOrdenar(aldeias.slice())
+        el.tbody.innerHTML = arr
+          .map((a) => {
+            const c = a[modo] || {}
+            return `<tr>
+          <td>${a.nome}</td>
+          <td class="coords">${a.coords}</td>
+          <td>${a.continente}</td>
+          <td>${fmt(c.spear)}</td>
+          <td>${fmt(c.sword)}</td>
+          <td>${fmt(c.axe)}</td>
+          <td>${fmt(c.light)}</td>
+          <td>${fmt(c.heavy)}</td>
+          <td>${fmt(c.ram)}</td>
+          <td>${fmt(c.catapult)}</td>
+          <td>${fmt(c.spy)}</td>
+        </tr>`
+          })
+          .join("")
+      }
+
+      function draw() {
+        if (!Array.isArray(aldeias)) return
+        renderStats()
+        if (view === "cards") {
+          el.cards.style.display = "grid"
+          el.table.style.display = "none"
+          renderCards()
+        } else {
+          el.cards.style.display = "none"
+          el.table.style.display = "block"
+          renderTable()
+        }
+      }
+
+      // 🔹 Eventos de UI
+      el.btnTotal.onclick = () => {
+        modo = "total"
+        el.btnTotal.classList.add("active")
+        el.btnFora.classList.remove("active")
+        draw()
+      }
+      el.btnFora.onclick = () => {
+        modo = "fora"
+        el.btnFora.classList.add("active")
+        el.btnTotal.classList.remove("active")
+        draw()
+      }
+      el.btnCards.onclick = () => {
+        view = "cards"
+        el.btnCards.classList.add("active")
+        el.btnTable.classList.remove("active")
+        draw()
+      }
+      el.btnTable.onclick = () => {
+        view = "table"
+        el.btnTable.classList.add("active")
+        el.btnCards.classList.remove("active")
+        draw()
+      }
+      el.ordem.onchange = () => draw()
+      el.btnAssinar.onclick = () => {
+        assinar(el.path.value.trim())
+      }
+
+      // 🔹 Firebase init + auth
+      const app = initializeApp(firebaseConfig)
+      const db = getDatabase(app)
+      const auth = getAuth(app)
+
+      try {
+        await signInAnonymously(auth)
+      } catch (e) {
+        console.warn(
+          "Auth anônima falhou. Verifique se está habilitada nas configurações do Firebase.",
+          e
+        )
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setStatus(`✅ Conectado (UID: ${user.uid.slice(0, 8)}…)`, "ok")
+        } else {
+          setStatus(
+            "ℹ️ Sem autenticação (regras públicas necessárias).",
+            "warn"
+          )
+        }
+      })
+
+      function limparAssinatura() {
+        if (unsubscribeRef) {
+          off(unsubscribeRef)
+          unsubscribeRef = null
+        }
+      }
+
+      function assinar(path) {
+        if (!path) return setStatus("❗ Informe um caminho válido.", "err")
+        limparAssinatura()
+        const r = ref(db, path)
+        unsubscribeRef = r
+        setStatus("📡 Assinando…")
+        onValue(
+          r,
+          (snap) => {
+            const v = snap.val()
+            if (!v) {
+              setStatus("⚠️ Sem dados nesse caminho.", "warn")
+              dados = null
+              aldeias = []
+              draw()
+              return
+            }
+            dados = v
+            // Espera estrutura { tropas_overview: { account_name, aldeias: { id: {...} } } }
+            const top = v.tropas_overview || v.tropas || v
+            el.playerName.textContent = top.account_name || "(sem nome)"
+            el.playerInline.textContent = top.account_name || "(sem nome)"
+            const objAldeias = top.aldeias || {}
+            aldeias = Object.values(objAldeias)
+            setStatus("🟢 Atualização recebida.", "ok")
+            draw()
+          },
+          (err) => {
+            console.error(err)
+            setStatus("❌ Erro ao escutar: " + (err?.message || err), "err")
+          }
+        )
+      }
+
+      // 🔹 Auto start
+      assinar(el.path.value.trim())
+    </script>
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resumo de Tropas – Fofox (Firebase Realtime)</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #0f1730;
+        --muted: #93a0b8;
+        --text: #e7ecf5;
+        --line: #1e2745;
+        --accent: #7aa2ff;
+        --ok: #22c55e;
+        --warn: #f59e0b;
+        --chip: #172245;
+        --card: #101a34;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          "Helvetica Neue", Arial, Inter, sans-serif;
+        background: linear-gradient(180deg, #0b1020, #0b1226) fixed;
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: auto;
+        padding: 20px;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.3px;
+      }
+      .badge {
+        font-size: 12px;
+        color: var(--muted);
+        border: 1px dashed #2b365f;
+        border-radius: 999px;
+        padding: 6px 10px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr repeat(4, minmax(120px, auto));
+        gap: 10px;
+      }
+      input,
+      select,
+      button {
+        font: inherit;
+        border: 1px solid #253058;
+        background: #0e1630;
+        color: var(--text);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: #41519a;
+      }
+      .toggle {
+        display: flex;
+        gap: 6px;
+        background: #0e1630;
+        border: 1px solid #253058;
+        border-radius: 12px;
+        padding: 6px;
+      }
+      .toggle button {
+        background: transparent;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 8px;
+      }
+      .toggle .active {
+        background: #12204a;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .stat h3 {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      .stat .v {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .view-tabs {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Cards */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .title {
+        font-weight: 700;
+      }
+      .coords {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .chip {
+        background: var(--chip);
+        border: 1px solid #24305d;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 12px;
+        color: #c7d4ff;
+      }
+
+      .bar {
+        height: 8px;
+        background: #0e1630;
+        border: 1px solid #22305c;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .bar > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #5e8bff, #7aa2ff);
+      }
+      .meters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .meter {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 8px;
+        align-items: center;
+      }
+      .meter small {
+        color: var(--muted);
+      }
+
+      /* Table */
+      .tablewrap {
+        margin-top: 14px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        background: #0f1732;
+        border-bottom: 1px solid var(--line);
+        color: #bcd2ff;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #142045;
+        text-align: center;
+      }
+      tbody tr:hover {
+        background: #0e1630;
+      }
+      th.sortable {
+        cursor: pointer;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .right {
+        justify-self: end;
+      }
+
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 10px 2px;
+        color: var(--muted);
+      }
+      .status-row b {
+        color: var(--text);
+      }
+
+      @media (max-width: 1024px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 720px) {
+        .controls {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Resumo de Tropas – <span id="playerName">(carregando)</span></h1>
+        <span class="badge"
+          >Firebase Realtime • Sem localStorage • Tempo real</span
+        >
+      </header>
+
+      <section class="panel">
+        <div class="controls">
+          <input
+            id="path"
+            placeholder="Caminho no DB"
+            value="jogadores/fofox"
+          />
+          <select id="ordem">
+            <option value="-total.spear">Ordenar: Lanceiros ↓</option>
+            <option value="-total.sword">Ordenar: Espadas ↓</option>
+            <option value="-total.axe">Ordenar: Machados ↓</option>
+            <option value="-total.light">Ordenar: Cavalaria leve ↓</option>
+            <option value="-total.heavy">Ordenar: Cavalaria pesada ↓</option>
+            <option value="-total.ram">Ordenar: Aríetes ↓</option>
+            <option value="-total.catapult">Ordenar: Catapultas ↓</option>
+            <option value="-total.spy">Ordenar: Batedores ↓</option>
+            <option value="nome">Ordenar: Nome A–Z</option>
+          </select>
+          <div class="toggle" role="tablist" aria-label="Tipo de contagem">
+            <button id="btnTotal" class="active" aria-selected="true">
+              Total
+            </button>
+            <button id="btnFora">Fora</button>
+          </div>
+          <div class="toggle" role="tablist" aria-label="Modo de visualização">
+            <button id="btnCards" class="active">Cartões</button>
+            <button id="btnTable">Tabela</button>
+          </div>
+          <button id="btnAssinar">Assinar caminho</button>
+        </div>
+
+        <div class="status-row">
+          <div id="status">⏳ Conectando…</div>
+          <div>Jogador: <b id="playerInline">—</b></div>
+        </div>
+
+        <div class="stats" id="stats"></div>
+
+        <div id="cards" class="grid"></div>
+        <div id="table" class="tablewrap" style="display: none">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-k="nome">Aldeia</th>
+                <th class="sortable" data-k="coords">Coordenadas</th>
+                <th class="sortable" data-k="continente">Continente</th>
+                <th class="sortable" data-k="spear">Lanceiros</th>
+                <th class="sortable" data-k="sword">Espadas</th>
+                <th class="sortable" data-k="axe">Machados</th>
+                <th class="sortable" data-k="light">Leves</th>
+                <th class="sortable" data-k="heavy">Pesados</th>
+                <th class="sortable" data-k="ram">Aríetes</th>
+                <th class="sortable" data-k="catapult">Catapultas</th>
+                <th class="sortable" data-k="spy">Exploradores</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="muted" style="margin-top: 10px">
+        Se preferir, altere o caminho (ex.: <code>jogadores/outroJogador</code>)
+        e clique em <b>Assinar caminho</b>.
+      </p>
+    </div>
+
+    <!-- Firebase v10 (modular) via ES Modules -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        off,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+
+      // ✅ Seu config
+      const firebaseConfig = {
+        apiKey: "AIzaSyDgmpnI5eIEKfNO80VKpTCXv9v24gbHL8M",
+        authDomain: "luczutilityscript.firebaseapp.com",
+        databaseURL: "https://luczutilityscript-default-rtdb.firebaseio.com",
+        projectId: "luczutilityscript",
+        storageBucket: "luczutilityscript.appspot.com",
+        messagingSenderId: "833792829994",
+        appId: "1:833792829994:web:b1c5b0828f5af126f97153",
+        measurementId: "G-4RNEE09GC9",
+      }
+
+      // 🔹 Estado
+      let unsubscribeRef = null // guarda ref atual para poder desinscrever
+      let dados = null // snapshot atual (estrutura completa do jogador)
+      let aldeias = [] // cache das aldeias
+      let modo = "total" // 'total' ou 'fora'
+      let view = "cards" // 'cards' ou 'table'
+      let ordem = "-total.spear"
+
+      // 🔹 Elementos
+      const el = {
+        playerName: document.getElementById("playerName"),
+        playerInline: document.getElementById("playerInline"),
+        status: document.getElementById("status"),
+        path: document.getElementById("path"),
+        ordem: document.getElementById("ordem"),
+        btnTotal: document.getElementById("btnTotal"),
+        btnFora: document.getElementById("btnFora"),
+        btnCards: document.getElementById("btnCards"),
+        btnTable: document.getElementById("btnTable"),
+        btnAssinar: document.getElementById("btnAssinar"),
+        stats: document.getElementById("stats"),
+        cards: document.getElementById("cards"),
+        table: document.getElementById("table"),
+        tbody: document.getElementById("tbody"),
+      }
+
+      function setStatus(text, kind = "info") {
+        const color =
+          kind === "ok"
+            ? "var(--ok)"
+            : kind === "warn"
+            ? "var(--warn)"
+            : kind === "err"
+            ? "#ef4444"
+            : "var(--muted)"
+        el.status.style.color = color
+        el.status.textContent = text
+      }
+
+      const fmt = (n) => (n || 0).toLocaleString("pt-BR")
+      const byPath = (obj, path) =>
+        path.split(".").reduce((o, k) => o?.[k], obj)
+
+      function somatorio(chave) {
+        return aldeias.reduce((acc, a) => acc + (a?.[modo]?.[chave] || 0), 0)
+      }
+
+      function renderStats() {
+        const items = [
+          ["Aldeias", aldeias.length],
+          ["Lanceiros", somatorio("spear")],
+          ["Espadas", somatorio("sword")],
+          ["Machados", somatorio("axe")],
+          ["Leves", somatorio("light")],
+          ["Pesados", somatorio("heavy")],
+          ["Aríetes", somatorio("ram")],
+          ["Catapultas", somatorio("catapult")],
+          ["Batedores", somatorio("spy")],
+        ]
+        el.stats.innerHTML = items
+          .map(
+            ([k, v]) =>
+              `<div class="stat"><h3>${k}</h3><div class="v">${fmt(
+                v
+              )}</div></div>`
+          )
+          .join("")
+      }
+
+      function maxFor(keys, arr) {
+        const m = {}
+        keys.forEach(
+          (k) => (m[k] = Math.max(1, ...arr.map((a) => a?.[modo]?.[k] || 0)))
+        )
+        return m
+      }
+
+      function filtrarOrdenar(arr) {
+        const key = el.ordem.value || ordem
+        ordem = key
+        const desc = key.startsWith("-")
+        const path = desc ? key.slice(1) : key
+        arr.sort((A, B) => {
+          const a = path.includes(".") ? byPath(A, path) : A[path]
+          const b = path.includes(".") ? byPath(B, path) : B[path]
+          if (typeof a === "number" && typeof b === "number")
+            return desc ? b - a : a - b
+          return desc
+            ? String(b).localeCompare(String(a))
+            : String(a).localeCompare(String(b))
+        })
+        return arr
+      }
+
+      function renderCards() {
+        const arr = filtrarOrdenar(aldeias.slice())
+        const keys = [
+          "spear",
+          "sword",
+          "axe",
+          "light",
+          "heavy",
+          "ram",
+          "catapult",
+          "spy",
+        ]
+        const MAX = maxFor(keys, arr)
+        el.cards.innerHTML = arr
+          .map((a) => {
+            const c = a[modo] || {}
+            return `
+        <article class="card" aria-label="${a.nome}">
+          <div class="head">
+            <div>
+              <div class="title">${a.nome}</div>
+              <div class="muted">ID ${a.id} • ${a.continente}</div>
+            </div>
+            <div class="coords">${a.coords}</div>
+          </div>
+          <div class="chips">
+            <span class="chip">Lanceiros: <b>${fmt(c.spear)}</b></span>
+            <span class="chip">Espadas: <b>${fmt(c.sword)}</b></span>
+            <span class="chip">Machados: <b>${fmt(c.axe)}</b></span>
+            <span class="chip">Leves: <b>${fmt(c.light)}</b></span>
+            <span class="chip">Pesados: <b>${fmt(c.heavy)}</b></span>
+            <span class="chip">Arietes: <b>${fmt(c.ram)}</b></span>
+            <span class="chip">Catapultas: <b>${fmt(c.catapult)}</b></span>
+            <span class="chip">Exploradores: <b>${fmt(c.spy)}</b></span>
+          </div>
+          <div class="meters">
+            ${keys
+              .map((k) => {
+                const v = c[k] || 0
+                const w = Math.round((v / MAX[k]) * 100)
+                const label = {
+                  spear: "Lanceiros",
+                  sword: "Espadas",
+                  axe: "Machados",
+                  light: "Leves",
+                  heavy: "Pesados",
+                  ram: "Aríetes",
+                  catapult: "Catapultas",
+                  spy: "Batedores",
+                }[k]
+                return `<div class="meter"><small>${label}</small><div class="bar"><span style="width:${w}%"></span></div></div>`
+              })
+              .join("")}
+          </div>
+        </article>`
+          })
+          .join("")
+      }
+
+      function renderTable() {
+        const arr = filtrarOrdenar(aldeias.slice())
+        el.tbody.innerHTML = arr
+          .map((a) => {
+            const c = a[modo] || {}
+            return `<tr>
+          <td>${a.nome}</td>
+          <td class="coords">${a.coords}</td>
+          <td>${a.continente}</td>
+          <td>${fmt(c.spear)}</td>
+          <td>${fmt(c.sword)}</td>
+          <td>${fmt(c.axe)}</td>
+          <td>${fmt(c.light)}</td>
+          <td>${fmt(c.heavy)}</td>
+          <td>${fmt(c.ram)}</td>
+          <td>${fmt(c.catapult)}</td>
+          <td>${fmt(c.spy)}</td>
+        </tr>`
+          })
+          .join("")
+      }
+
+      function draw() {
+        if (!Array.isArray(aldeias)) return
+        renderStats()
+        if (view === "cards") {
+          el.cards.style.display = "grid"
+          el.table.style.display = "none"
+          renderCards()
+        } else {
+          el.cards.style.display = "none"
+          el.table.style.display = "block"
+          renderTable()
+        }
+      }
+
+      // 🔹 Eventos de UI
+      el.btnTotal.onclick = () => {
+        modo = "total"
+        el.btnTotal.classList.add("active")
+        el.btnFora.classList.remove("active")
+        draw()
+      }
+      el.btnFora.onclick = () => {
+        modo = "fora"
+        el.btnFora.classList.add("active")
+        el.btnTotal.classList.remove("active")
+        draw()
+      }
+      el.btnCards.onclick = () => {
+        view = "cards"
+        el.btnCards.classList.add("active")
+        el.btnTable.classList.remove("active")
+        draw()
+      }
+      el.btnTable.onclick = () => {
+        view = "table"
+        el.btnTable.classList.add("active")
+        el.btnCards.classList.remove("active")
+        draw()
+      }
+      el.ordem.onchange = () => draw()
+      el.btnAssinar.onclick = () => {
+        assinar(el.path.value.trim())
+      }
+
+      // 🔹 Firebase init + auth
+      const app = initializeApp(firebaseConfig)
+      const db = getDatabase(app)
+      const auth = getAuth(app)
+
+      try {
+        await signInAnonymously(auth)
+      } catch (e) {
+        console.warn(
+          "Auth anônima falhou. Verifique se está habilitada nas configurações do Firebase.",
+          e
+        )
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setStatus(`✅ Conectado (UID: ${user.uid.slice(0, 8)}…)`, "ok")
+        } else {
+          setStatus(
+            "ℹ️ Sem autenticação (regras públicas necessárias).",
+            "warn"
+          )
+        }
+      })
+
+      function limparAssinatura() {
+        if (unsubscribeRef) {
+          off(unsubscribeRef)
+          unsubscribeRef = null
+        }
+      }
+
+      function assinar(path) {
+        if (!path) return setStatus("❗ Informe um caminho válido.", "err")
+        limparAssinatura()
+        const r = ref(db, path)
+        unsubscribeRef = r
+        setStatus("📡 Assinando…")
+        onValue(
+          r,
+          (snap) => {
+            const v = snap.val()
+            if (!v) {
+              setStatus("⚠️ Sem dados nesse caminho.", "warn")
+              dados = null
+              aldeias = []
+              draw()
+              return
+            }
+            dados = v
+            // Espera estrutura { tropas_overview: { account_name, aldeias: { id: {...} } } }
+            const top = v.tropas_overview || v.tropas || v
+            el.playerName.textContent = top.account_name || "(sem nome)"
+            el.playerInline.textContent = top.account_name || "(sem nome)"
+            const objAldeias = top.aldeias || {}
+            aldeias = Object.values(objAldeias)
+            setStatus("🟢 Atualização recebida.", "ok")
+            draw()
+          },
+          (err) => {
+            console.error(err)
+            setStatus("❌ Erro ao escutar: " + (err?.message || err), "err")
+          }
+        )
+      }
+
+      // 🔹 Auto start
+      assinar(el.path.value.trim())
+    </script>
+  </body>
+</html>
